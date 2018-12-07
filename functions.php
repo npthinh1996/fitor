@@ -66,55 +66,48 @@ function fitor_pagination(){
 // Related post
 function fitor_related_post($title, $count){
     global $post;
-        $tag_ids = array();
-        $current_cat = get_the_category($post->ID);
-        $current_cat = $current_cat[0]->cat_ID;
-        $this_cat = '';
-        $tags = get_the_tags($post->ID);
-        if ( $tags ) {
-            foreach($tags as $tag) {
-                $tag_ids[] = $tag->term_id;
-            }
-        } else {
-            $this_cat = $current_cat;
+    $tag_ids = array();
+    $current_cat = get_the_category($post->ID);
+    $current_cat = $current_cat[0]->cat_ID;
+    $this_cat = '';
+    $tags = get_the_tags($post->ID);
+    if($tags){
+        foreach($tags as $tag){
+            $tag_ids[] = $tag->term_id;
         }
-
-        $args = array(
-            'post_type'   => get_post_type(),
-            'numberposts' => $count,
-            'orderby'     => 'rand',
-            'tag__in'     => $tag_ids,
-            'cat'         => $this_cat,
-            'exclude'     => $post->ID
-        );
+    } else{
+        $this_cat = $current_cat;
+    }
+    $args = array(
+        'post_type' => get_post_type(),
+        'numberposts' => $count,
+        'orderby' => 'rand',
+        'tag_in' => $tag_ids,
+        'cat' => $this_cat,
+        'exclude' => $post->ID
+    );
+    $related_posts = get_posts($args);
+    if(empty($related_posts)){
+        $args['tag_in'] = '';
+        $args['cat'] = $current_cat;
         $related_posts = get_posts($args);
-
-        if ( empty($related_posts) ) {
-            $args['tag__in'] = '';
-            $args['cat'] = $current_cat;
-            $related_posts = get_posts($args);
-        }
-        if ( empty($related_posts) ) {
-            return;
-        }
-        $post_list = '';
-        foreach($related_posts as $related) {
-
-            $post_list .= '<div class="media mb-4 ">';
-              $post_list .= '<img class="mr-3 img-thumbnail" style="width: 150px" src="'.get_the_post_thumbnail_url($related->ID, 'post-small').'" alt="Generic placeholder image">';
-                $post_list .= '<div class="media-body align-self-center">';
-                    $post_list .= '<h5 class="mt-0"><a href="'.get_permalink($related->ID).'">'.$related->post_title.'</a></h5>';
-                    $post_list .= get_the_category( $related->ID )[0]->cat_name;
-
-              $post_list .= '</div>';
-            $post_list .= '</div>';
-        }
-
-        return sprintf('
-            <div class="card my-4">
-                <h4 class="card-header">%s</h4>
-                <div class="card-body">%s</div>
-            </div>
-        ', $title, $post_list );
+    }
+    if(empty($related_posts)){
+        return;
+    }
+    $post_list = '';
+    foreach($related_posts as $related){
+        $post_list .= '<div style="width:182px;display:inline-block"><div class="card mb-4">';
+        $post_list .= '<img class="card-img-top" src="'.get_the_post_thumbnail_url($related->ID, 'blog-thumbnail').'" alt="post-image">';
+        $post_list .= '<h5 class="card-title text-center"><a href="'.get_permalink($related->ID).'">'.$related->post_title.'</a></h5>';
+        $post_list .= '</div></div>';
+    }
+    return sprintf(
+        '<div class="card my-4">
+            <h4 class="card-header">%s</h4>
+            <div class="card-body">%s</div>
+        </div>',
+        $title, $post_list
+    );
 }
 ?>
