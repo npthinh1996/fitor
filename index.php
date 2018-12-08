@@ -5,8 +5,8 @@
         <!-- Blog post -->
         <div class="col-md-9">
             <?php 
-            if (have_posts()): 
-                while (have_posts()):
+            if(have_posts()): 
+                while(have_posts()):
                     the_post();
                     get_template_part('includes/content', get_post_format());
                 endwhile;

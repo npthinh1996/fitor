@@ -82,13 +82,13 @@ function fitor_related_post($title, $count){
         'post_type' => get_post_type(),
         'numberposts' => $count,
         'orderby' => 'rand',
-        'tag_in' => $tag_ids,
+        'tag__in' => $tag_ids,
         'cat' => $this_cat,
         'exclude' => $post->ID
     );
     $related_posts = get_posts($args);
     if(empty($related_posts)){
-        $args['tag_in'] = '';
+        $args['tag__in'] = '';
         $args['cat'] = $current_cat;
         $related_posts = get_posts($args);
     }
@@ -109,5 +109,24 @@ function fitor_related_post($title, $count){
         </div>',
         $title, $post_list
     );
+}
+
+// Comment
+function fitor_comment($comment, $args, $depth){
+    $GLOBALS['comment'] = $comment; 
+    if($comment->comment_approved == '1' ): ?>
+    <li class="media mb-4">
+        <?php echo '<img class="d-flex mr-3 rounded-circle" src="'.get_avatar_url($comment).'" style="width:60px;">' ?>
+        <div class="media-body">
+            <?php echo '<h5 class="mt-0 mb-0"><a rel="nofllow" href="'.get_comment_author_url().'">'.get_comment_author().'</a> - <small>'.get_comment_date().' - '.get_comment_time().'</small></h5>' ?>
+            <p class="mt-1">
+                <?php comment_text() ?>
+            </p>
+            <div class="reply">
+                <?php comment_reply_link(array_merge($args, array('reply_text' => 'Trả lời', 'depth' => $depth, 'max_depth' => $args['max_depth']))) ?>
+            </div>
+        </div>
+    </li>
+    <?php endif;
 }
 ?>

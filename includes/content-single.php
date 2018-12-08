@@ -7,4 +7,12 @@
 <hr>
 <strong>Nội dung:</strong>
 <?php the_content() ?>
+<hr>
+<div class="mt-3">
+    <?php 
+    if(comments_open() || get_comments_number()){
+        comments_template();
+    }
+    ?>
+</div>
 <?php echo fitor_related_post('Bài viết liên quan', 4) ?>
